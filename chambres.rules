@@ -1,0 +1,134 @@
+// import org.eclipse.smarthome.model.script.ScriptServiceUtil
+// import org.eclipse.smarthome.core.library.items.StringItem
+// import java.util.ArrayList
+
+val TAG_FileName = "chambre.rules"
+rule "Démarrage de openHAB"
+when
+    System started
+then
+    logInfo(TAG_FileName, "Rule : Démarrage de openHAB")
+    // il n'y a personne dans la pièce et l'éclairage est fermé
+    Presence.members.forEach[ i | i.postUpdate(OFF)]
+    Eclairage.members.forEach[ i | i.postUpdate(OFF)]
+    Interrupteurs.members.forEach[ i | i.postUpdate(OFF)]
+    Zones.members.forEach[i | i. postUpdate(OFF)]
+    capteur_luminosity.postUpdate(OFF)
+end
+
+
+rule "reset simulation"
+when
+    Item simulation received update
+then
+    logInfo(TAG_FileName, "Rule : reset simulation")
+    Presence.members.forEach[ i | i.postUpdate(simulation.state)]
+    Eclairage.members.forEach[ i | i.postUpdate(simulation.state)]
+    Interrupteurs.members.forEach[ i | i.postUpdate(simulation.state)]
+    Zones.members.forEach[i | i. postUpdate(simulation.state)]
+    capteur_luminosity.postUpdate(0)
+end
+
+
+rule "Checkup capteurs"
+when Time is midnight 
+then
+    if (Presence.state == OFF){
+        Presence.members.forEach[any_sensor | any_sensor.sendCommand(ON)]
+        if (Eclairage.state == OFF){
+            //sendNotification(emailAddress, "Something went wrong with the motion sensors")
+        }
+        // A minuit, logiquement le capteur de luminosité doit être en dessous de la limite 20
+        //On va donc la mettre à + 20 pour voir si les ampoules s'éteignent automatiquement
+        capteur_luminosity.sendCommand(30)
+        if (Eclairage.state == ON ){
+            //sendNotification(emailAddress, "Something went wrong with the luminosity sensors")
+        }
+    }
+end
+
+
+rule "Contrôle de l'éclairage de la chambre"
+when
+    Member of Presence changed or Item capteur_luminosity changed
+then
+    if (Presence.state == OFF) {
+        // Personne n'est dans la pièce, éteindre l'éclairage
+        Eclairage.sendCommand(OFF)
+    } else {
+        // Quelqu'un est dans la pièce 
+        if (capteur_luminosity.state < 20) {
+            // Lumière du jour insuffisante, allumer l'éclairage
+            ampoule_plafonnier.sendCommand(ON)
+
+            if(Presence_Lit.state == ON) {
+            // Si la personne présente est dans le lit, eteindre l'ampoule plafonnier et allumer l'ampoule de chevet
+            ampoule_plafonnier.sendCommand(OFF)
+            ampoule_chevet.sendCommand(ON)
+            }
+        } else{
+            // Lumière du jour suffisante, éteindre l'éclairage
+            Eclairage.sendCommand(OFF)
+        }
+    }
+end
+
+
+rule "Etteindre ampoule si X dort"
+when 
+    Item Presence_Lit changed from OFF to ON
+then
+    if (Presence_Lit.state==ON){    
+        // Si la personne présente ne bouge pas après 15 minutes éteindre la lampe de chevet
+        timer = createTimer(now.plusMinutes(15))[ampoule_chevet.sendCommand(OFF)]
+    } else {
+        if(timer!=null) {
+        timer.cancel
+        timer = null
+    }
+    }
+end
+// Règles déclenchement de l'interrupteur
+rule "Contrôle de l'ampoule avec l'interrupteur"
+when
+    Item Interrupteurs changed
+then
+//Ampoule plafonnier
+if (interrupteur_Ampoule_plafond.state == ON) {
+    ampoule_plafonnier.sendCommand(ON)
+} else {
+    ampoule_plafonnier.sendCommand(OFF) 
+}
+//Ampoule chevet
+if (interrupteur_Ampoule_chevet.state == ON) {
+    ampoule_chevet.sendCommand(ON)
+} else {
+    ampoule_chevet.sendCommand(OFF) 
+}
+end
+
+
+
+
+//---------------------------------------------------------------------
+
+
+
+    // rule "do something if item state is 1 for more than 100 seconds"
+    // when
+    // 	Item MyItem changed
+    // then
+    // 	if(MyItem.state==1) {
+    // 		timer = createTimer(now.plusSeconds(100)) [|
+    //                     //do something
+    // 			if (MyItem.state==1) {
+    //                          logInfo("MyItem", "MyItem has been open for 100 seconds")
+    //                     }
+    // 		]
+    // 	} else {
+    // 		if(timer!=null) {
+    // 			timer.cancel
+    // 			timer = null
+    // 		}
+    // 	}
+    // end

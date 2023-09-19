@@ -1,0 +1,9 @@
+// Bridge hue:bridge:mybridge [ ipAddress="192.168.3.123" ] {
+// Thing 0210 bulb1 [ lightId="1" ]
+// Thing 0210 bulb2 [ lightId="2" ]}
+
+
+Thing ampoule_plafonnier "ampoule_plafonnier"
+Thing Presence_Entiere "detecteur_mvt_plafond"
+Thing capteur_luminosity "capteur_luminosité"
+Thing interrupteur "interrupteur"

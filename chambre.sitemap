@@ -1,0 +1,39 @@
+sitemap chambre label="Ma chambre intelligente" {
+Frame label="Simulation" {
+Switch item=simulation mappings=[ON="tous à ON", OFF="Tous à OFF"]
+}
+Frame label="Zones simulées" {
+Switch item=chambre mappings=[ON="occupée", OFF="libre"]
+Switch item=lit mappings=[ON="occupé", OFF="libre"]
+Switch item=porte mappings=[ON="fermée", OFF="ouverte"]
+}
+Frame label="Capteurs de présence " {
+Switch item=Presence mappings=[ON="Presence ON", OFF="Presence OFF"]
+Switch item=Presence_Entiere mappings=[ON="ON", OFF="OFF"]
+Switch item=Presence_Lit mappings=[ON="ON", OFF="OFF"]
+Switch item=Presence_Porte mappings=[ON="ON", OFF="OFF"]
+
+// à compléter, un frame ne peut pas être vide
+}
+Frame label="Éclairage" {
+Switch item=Eclairage mappings=[ON="Eclairage ON", OFF="Eclairage OFF"]
+Switch item=ampoule_plafonnier mappings=[ON="ON", OFF="OFF"]
+Switch item=ampoule_chevet mappings=[ON="ON", OFF="OFF"]
+// à compléter, un frame ne peut pas être vide
+}
+Frame label="Capteur de luminosité " {
+Default item=capteur_luminosity
+}
+Frame label="Interrupteurs" {
+Switch item=Interrupteurs mappings=[ON="Interrupteurs ON", OFF="Interrupteurs OFF"]
+Default item=interrupteur_Ampoule_plafond
+Default item=interrupteur_Ampoule_chevet
+}
+}
+
+// Switch ampoule_plafonnier "Ampoule plafond" <switch>
+// Switch detecteur_mvt_plafond "Détecteur de mouvement" <motion>
+
+// Frame label="Capteur de luminosité " {
+// Default item=capteur_luminosity
+// }

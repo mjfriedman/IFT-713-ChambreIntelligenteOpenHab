@@ -1,0 +1,31 @@
+// itemtype itemname "labeltext [stateformat]" <iconname> (group1, group2, ...)
+// ["tag1", "tag2", ...] {bindingconfig}
+Group Maison
+
+Group:Switch:OR(ON,OFF) Interrupteurs "Interrupteurs ON = [%d]" (Zones, Maison)
+Switch interrupteur_Ampoule_plafond "Interrupteur Ampoule Plafonnier" <wallswitch> (Interrupteurs, Maison)
+Switch interrupteur_Ampoule_chevet "Interrupteur Ampoule au chevet" <wallswitch> (Interrupteurs, Maison)
+
+
+Dimmer capteur_luminosity "Capteur de luminosité" <sun>
+
+//Group Zones
+Group Zones "Zones" (Maison)
+Switch chambre "Chambre" <bedroom> (Zones, Maison)
+Switch lit "Lit" <bedroom> (Zones, Maison)
+Switch porte "Porte" <door> (Zones, Maison)
+
+//Group Presence
+Group:Switch:OR(ON,OFF) Presence "Capteurs de présence actifs = [%d]" (Zones, Maison) 
+Switch Presence_Lit "Présence autour du lit" <motion> (Presence, Zones, Maison) 
+Switch Presence_Porte "Présence seuil de porte" <motion> (Presence, Zones, Maison) 
+Switch Presence_Entiere "Présence chambre entière" <motion> (Presence, Zones, Maison) 
+
+//Group Eclairage
+Group:Switch:OR(ON,OFF) Eclairage "Ampoules actives = [%d]" (Maison)         
+//Switch eclairage "Eclairage" <switch> (Eclairage)
+Switch ampoule_chevet "Ampoule au chevet" <lightbulb> (Eclairage, Maison) 
+Switch ampoule_plafonnier "Ampoule plafonnier" <lightbulb> (Eclairage, Maison) 
+
+// contrôleur pour la simulation
+Switch simulation "Reset" <switch>
